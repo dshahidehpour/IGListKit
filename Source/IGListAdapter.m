@@ -464,12 +464,17 @@
 - (void)updateObjects:(NSArray *)objects dataSource:(id<IGListAdapterDataSource>)dataSource {
     IGParameterAssert(dataSource != nil);
 
+    static NSString *const kIGListKitEmptyDataObject = @"Empty Data Object";
+    if (objects.count == 0 && [self.dataSource emptySectionControllerForListAdapter:self] != nil) {
+        [self updateObjects:@[kIGListKitEmptyDataObject] dataSource:dataSource];
+        return;
+    }
+
 #if DEBUG
     for (id object in objects) {
         IGAssert([object isEqualToDiffableObject:object], @"Object instance %@ not equal to itself. This will break infra map tables.", object);
     }
 #endif
-
     NSMutableArray<IGListSectionController <IGListSectionType> *> *sectionControllers = [[NSMutableArray alloc] init];
     IGListSectionMap *map = self.sectionMap;
 
@@ -485,7 +490,15 @@
 
     for (id object in objects) {
         // infra checks to see if a controller exists
-        IGListSectionController <IGListSectionType> *sectionController = [map sectionControllerForObject:object];
+        IGListSectionController <IGListSectionType> *sectionController = nil;
+        if ([object isEqual:kIGListKitEmptyDataObject]) {
+            sectionController = [self.dataSource emptySectionControllerForListAdapter:self];
+#if DEBUG
+            IGAssert((sectionController != nil), @"You have a returned a nil Section Controller for an empty state. That wasn't always the case.");
+#endif
+        } else {
+            sectionController = [map sectionControllerForObject:object];
+        }
 
         // if not, query the data source for a new one
         if (sectionController == nil) {

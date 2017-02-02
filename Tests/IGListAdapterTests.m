@@ -18,6 +18,7 @@
 #import "IGListTestAdapterDataSource.h"
 #import "IGListTestAdapterHorizontalDataSource.h"
 #import "IGListTestSection.h"
+#import "IGTestEmptySectionController.h"
 #import "IGTestSupplementarySource.h"
 #import "IGTestNibSupplementaryView.h"
 
@@ -313,7 +314,7 @@ XCTAssertEqual(CGPointEqualToPoint(point, p), YES); \
     XCTAssertEqual([self.adapter visibleCellsForSectionController:sectionController6].count, 0);
 }
 
-- (void)test_whenDataSourceAddsItems_thatEmptyViewBecomesVisible {
+- (void)test_whenDataSourceAddsItems_thatEmptyViewBecomesInvisible {
     self.dataSource.objects = @[];
     UIView *background = [UIView new];
     self.dataSource.backgroundView = background;
@@ -377,6 +378,33 @@ XCTAssertEqual(CGPointEqualToPoint(point, p), YES); \
         [expectation fulfill];
     }];
     [self waitForExpectationsWithTimeout:15 handler:nil];
+}
+
+- (void)test_whenDataSourceHasNoObjects_andWeHaveAnEmptySectionController_emptyViewIsHidden {
+    self.dataSource.objects = @[@1];
+    self.dataSource.backgroundView = [UIView new];
+    IGTestEmptySectionController *emptySectionController = [[IGTestEmptySectionController alloc] init];
+    self.dataSource.emptySectionController = emptySectionController;
+    [self.adapter reloadDataWithCompletion:nil];
+
+    self.dataSource.objects = @[];
+    [self.adapter reloadDataWithCompletion:nil];
+    XCTAssertNotNil(self.collectionView.backgroundView);
+    XCTAssertTrue(self.collectionView.backgroundView.hidden);
+}
+
+- (void)test_whenDataSourceHasNoObjects_andWeHaveAnEmptySectionController_andAnEmptyView_EmptySectionControllerIsDisplayed {
+    self.dataSource.objects = @[@1];
+    self.dataSource.backgroundView = [UIView new];
+    IGTestEmptySectionController *emptySectionController = [[IGTestEmptySectionController alloc] init];
+    self.dataSource.emptySectionController = emptySectionController;
+    [self.adapter reloadDataWithCompletion:nil];
+
+    self.dataSource.objects = @[];
+    [self.adapter reloadDataWithCompletion:nil];
+    XCTAssertEqual(self.adapter.objects.count, 1);
+    XCTAssertEqual(self.adapter.visibleSectionControllers.count, 1);
+    XCTAssertEqual([self.adapter visibleCellsForSectionController:emptySectionController].count, 1);
 }
 
 - (void)test_whenScrollViewDelegateSet_thatDelegateReceivesEvents {

@@ -28,4 +28,8 @@
     return self.backgroundView;
 }
 
+- (nullable IGListSectionController<IGListSectionType> *)emptySectionControllerForListAdapter:(IGListAdapter *)listAdapter {
+    return self.emptySectionController;
+}
+
 @end

@@ -18,4 +18,6 @@
 
 @property (nonatomic, strong) UIView *backgroundView;
 
+@property (nonatomic, strong) IGListSectionController <IGListSectionType> *emptySectionController;
+
 @end

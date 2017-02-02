@@ -30,4 +30,8 @@
     return nil;
 }
 
+- (IGListSectionController<IGListSectionType> *)emptySectionControllerForListAdapter:(IGListAdapter *)listAdapter {
+    return nil;
+}
+
 @end

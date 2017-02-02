@@ -59,8 +59,22 @@ NS_ASSUME_NONNULL_BEGIN
  @note This method is called every time the list adapter is updated. You are free to return new views every time,
  but for performance reasons you may want to retain the view and return it here. The infra is only responsible for
  adding the background view and maintaining its visibility.
+ 
+ It is also worth mentioning that if `emptySectionControllerForListAdapter:` has been implemented, this will have no affect.
  */
 - (nullable UIView *)emptyViewForListAdapter:(IGListAdapter *)listAdapter;
+
+/**
+ Asks the data source for a section controller to display a cell when there are no objects.
+
+ @param listAdapter The list adapter requesting this information.
+
+ @return A section controller that is responsible for a cell to display when there are no objects, or nil if you don't want to display anything.
+
+ @discussion This method is called every time the list adapter is updated. You are free to return a new section controller every time,
+ but for performance reasons you may want to retain your own section controller and return it here. This callback will supercede `emptyViewForListAdapter:`.
+ */
+- (nullable IGListSectionController <IGListSectionType> *)emptySectionControllerForListAdapter:(IGListAdapter *)listAdapter;
 
 @end
 
